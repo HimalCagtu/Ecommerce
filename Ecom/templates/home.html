@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/static/css/main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+
+  <div class="headding" style="display: flex; justify-content: space-between;">
+  
+
+  </div>
+</head>
+<body>
+  <header>
+    
+    <h1>Welcome to Gada Electronics, {{user.name}} <form method="GET" action="{% url 'home' %}">
+    {% csrf_token %}
+
+    <input type="search" name="q">
+    <input type="submit" value="search">
+
+
+  </form> 
+  <div class="footer" style="text-align:end;">
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+    <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+  </div>
+  <div style="text-align: center; justify-content: center;"><p>Categories</p>
+  <label for="myDropdown"></label>
+  <select id="myDropdown" onchange="redirectToURL(this.value)">
+      <option value="{% url 'home' %}?q=">....</option>
+      <option value="{% url 'home' %}?q=">All</option>
+      <option value="{% url 'home' %}?q=Phone">Phone</option>
+      <option value="{% url 'home' %}?q=Tv">Television</option>
+  </select>
+
+  <script>
+      function redirectToURL(value) {
+          if (value) {
+              window.location.href = value;
+          }
+      }
+  </script></h1></div>
+  </div>
+  </header>
+  <div class="container">
+    <div class="product">
+    
+        {% for product in product %}
+        <img src="{{product.image.url}}" style="width: 200px; height: 200px;">
+        <a href="{% url 'details' product.id %}" style="text-decoration: none; color: brown;"><h3>{{product.name}}</h3></a>
+        <p>{{product.description}}</p>
+        <p><small>Rs {{product.price|floatformat}}</small></p>
+        {% if request.user.is_authenticated %}
+           <a href="{% url 'cart' product.id %}"><button>Add to Cart</button>
+           
+            <hr></a> 
+         {% else %}
+         <p>Please <a href="{% url 'login' %}" style="text-decoration: none;">Login</a> to Buy</p>
+          {% endif %}
+         {% endfor %}
+</div>
+    </div>
+
+{% for pro in userpro %}
+    {{pro.product}}
+    {% endfor %}
+</body>
+
+
+
+</div>
+
+</html>
+
+

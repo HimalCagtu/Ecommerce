@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+<body>
+    
+
+
+    <div style="text-align: center; width: 500px; height: 500px; border: 2px solid black; background-color: bisque;">
+    
+    {% if page == 'signup' %}
+
+<form method="POST" style="margin: auto;">
+
+    {% csrf_token %}
+   
+    {{form.as_p}}
+    <input type="file" name ="image">
+    <input type="submit" value="Signup">
+</form>
+
+{% else %}
+
+<form method="POST">
+
+    {% csrf_token %}
+    <label>EMAIL</label>
+    <input type="email" name="email">
+    <br>
+    <label>PASSWORD</label>
+    <input type="password" name="password">
+    
+    <input type="submit" value="Login" style="padding: 5px; position:sticky; margin: auto;">
+</form>
+
+{% endif %}
+</div>
+</body>
+</html>

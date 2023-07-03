@@ -1,0 +1,77 @@
+<head>{% if messages %}</head>
+	{% for m in messages %}
+		{{m}}
+		{% endfor %}
+		{% endif %}
+
+
+
+	{% if page == 'shipping' %}
+    <div style="text-align: center; background-color: rgb(168, 185, 180);">
+        <h3 style="color: brown;">Address Info</h3>
+        <form method="POST">
+		{% csrf_token %}
+
+		{{form.as_p}}	
+		
+	<input type="submit" value ="Ship">
+
+</form></div>
+	
+{% endif %}
+	<div class="container my-5">
+
+
+
+    <div class="my-5">
+        <h2 style="text-align: center; color: brown; background-color: aliceblue;">Your Cart</h2>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                
+                <th scope="col">Image</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <div style="text-align: center; justify-content: center;">  {% for cart in cart %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ cart.item.name }}</td>
+                <td>{{ cart.quantity }}</td>
+				
+                <td>${% widthratio cart.quantity 1 cart.item.price %} </td>
+				
+                <td><img src="{{cart.item.image.url}}" style="width: 100px; height: 100px;" alt="{{cart.item.name}}"> </td>
+				<td><a href="{% url 'cart' cart.item.id %}" style="text-decoration: none;">+</a></td>
+				
+				
+                <td><a href="{% url 'remove' cart.item.id %}" style="text-decoration: none; font-size: larger; font-family: 'Courier New', Courier, monospace;">-</a></td>
+                <td><a href="{% url 'removeitem' cart.id %}" style="text-decoration: none;">Remove</a></td>
+            </tr>
+            {% endfor %}</div>
+          
+            <tr>
+                <th scope="row"></th>
+                <td colspan="2">Total</td>
+                <td colspan="2"></td>
+                <td colspan="2">{{p}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                {% if p > 0 %}
+                <th scope="row"></th>
+                <td colspan="3" class="text-right ">
+                    <button class="btn btn-success mr-4"><a href="{% url 'ship' %}">Proceed To Checkout</a></button>
+                </td>
+                {% endif %}
+            </tr>
+        </tbody>
+    </table>
+	<a href="{% url 'home' %}">Continue Shopping</a>
+</div>
