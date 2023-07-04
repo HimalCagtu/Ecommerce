@@ -39,7 +39,8 @@ class Cart(models.Model):
 
      def __str__(self) -> str:
          return f'{self.quantity} of {self.user.name}'
-
+     
+     
 
 
 class Order(models.Model):

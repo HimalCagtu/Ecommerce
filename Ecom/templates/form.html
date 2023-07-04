@@ -1,23 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
-</head>
-<body>
+{% extends 'home.html' %}
     
+{% block log %}
 
-
-    <div style="text-align: center; width: 500px; height: 500px; border: 2px solid black; background-color: bisque;">
+{% endblock log %}
+{% block content %}
+<div style="text-align:center; border: 2px solid bisque; background-color: bisque; display: flex; justify-content:safe;">
     
-    {% if page == 'signup' %}
+{% if page == 'signup' %}
 
 <form method="POST" style="margin: auto;">
 
     {% csrf_token %}
    
-    {{form.as_p}}
+    {{form.as_table}}
+    <label>Image</label>
     <input type="file" name ="image">
     <input type="submit" value="Signup">
 </form>
@@ -38,5 +34,4 @@
 
 {% endif %}
 </div>
-</body>
-</html>
+{% endblock %}

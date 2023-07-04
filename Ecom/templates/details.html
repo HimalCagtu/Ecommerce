@@ -1,3 +1,6 @@
+{% extends 'home.html' %}
+
+{% block content %}
 {{item.name}}
 <img src="{{item.image.url}}" width="100px" height="100px" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
 <p style="margin: 0; font-weight: bold; font-size: 16px;">Rs {{item.price}}</p>
@@ -19,3 +22,4 @@
     Please <a href="{% url 'login' %}" style="text-decoration: none; color: #4CAF50;">Login</a> to Buy
   </p>
 {% endif %}
+{% endblock %}

@@ -1,80 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <link rel="stylesheet" href="/static/css/main.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{title}}</title>
+    <link rel="stylesheet" href="static/cs/main.css">
+  <title>Ecommerce Website</title>
+  <style>
+    /* Add your CSS styling here */
+    body {
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background-color: #f5f5f5;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    footer {
+      background-color: #f5f5f5;
+      padding: 10px;
+      text-align: center;
+    }
+    .container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 
-  <div class="headding" style="display: flex; justify-content: space-between;">
-  
+form {
 
-  </div>
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+.log{ 
+    justify-content: flex-end;
+    text-align: end;
+    margin-top: 100px;
+    margin-right: 40px;
+    
+
+
+
+}
+.item {
+  width: calc(33.33% - 20px);
+  margin-bottom: 20px;
+  background-color: #eaeaea;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 991px) {
+  .item {
+    width: calc(50% - 20px);
+  }
+}
+
+@media (max-width: 767px) {
+  .item {
+    width: 100%;
+  }
+}
+  </style>
 </head>
 <body>
   <header>
+    <a href="{% url 'cartview' %}">My Cart</a>
+    <div class="header">
+       
+      <!-- Add your header content here -->
+      <a href="{% url 'home' %}" style="text-decoration: none;"><h1 >Gada Electronics <img src="/images/gada.png" width="50px; style"></h1></a>
+      
+      <form method="GET" action="{% url 'home' %}">
+            
+        <input type="search" name="q" style="color: rebeccapurple; border-color: greenyellow; border-radius: 4px;">
+        <input type="submit" value ="search">
+    </form>
+    </div>
+    {% block log %}
     
-    <h1>Welcome to Gada Electronics, {{user.name}} <form method="GET" action="{% url 'home' %}">
-    {% csrf_token %}
-
-    <input type="search" name="q">
-    <input type="submit" value="search">
-
-
-  </form> 
-  <div class="footer" style="text-align:end;">
-    {% if request.user.is_authenticated %}
-    <a href="{% url 'logout' %}">Logout</a>
-    {% else %}
-    <a href="{% url 'login' %}">Login</a>
-    {% endif %}
-  </div>
-  <div style="text-align: center; justify-content: center;"><p>Categories</p>
-  <label for="myDropdown"></label>
-  <select id="myDropdown" onchange="redirectToURL(this.value)">
-      <option value="{% url 'home' %}?q=">....</option>
-      <option value="{% url 'home' %}?q=">All</option>
-      <option value="{% url 'home' %}?q=Phone">Phone</option>
-      <option value="{% url 'home' %}?q=Tv">Television</option>
-  </select>
-
-  <script>
-      function redirectToURL(value) {
-          if (value) {
-              window.location.href = value;
-          }
-      }
-  </script></h1></div>
-  </div>
+     <div class="footer" style="text-align:end;">
+       {% if request.user.is_authenticated %}
+       <a href="{% url 'logout' %}">Logout</a>
+       {% else %}
+       <a href="{% url 'login' %}">Login</a>
+       {% endif %}
+     </div>
+   {% endblock log %}
   </header>
+  {% block content %}
   <div class="container">
-    <div class="product">
-    
-        {% for product in product %}
-        <img src="{{product.image.url}}" style="width: 200px; height: 200px;">
-        <a href="{% url 'details' product.id %}" style="text-decoration: none; color: brown;"><h3>{{product.name}}</h3></a>
-        <p>{{product.description}}</p>
-        <p><small>Rs {{product.price|floatformat}}</small></p>
-        {% if request.user.is_authenticated %}
-           <a href="{% url 'cart' product.id %}"><button>Add to Cart</button>
-           
-            <hr></a> 
+      {% for  product in product %}
+  <div class="item">
+      <!-- Item 1 content -->
+      <a href="{% url 'details' product.id %}" style="text-decoration: none; color: brown;"><h3>{{product.name}}</h3></a>
+      <img src="{{product.image.url}}" alt="" height="50px"  width="50px">
+      <p>Rs {{product.price}}</p>
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'cart' product.id %}" style="position: relative;">
+        <button style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+          Add to Cart
+        </button>
+      </a>
+      
          {% else %}
          <p>Please <a href="{% url 'login' %}" style="text-decoration: none;">Login</a> to Buy</p>
-          {% endif %}
-         {% endfor %}
-</div>
-    </div>
-
-{% for pro in userpro %}
-    {{pro.product}}
+            {% endif %}
+        </div>
     {% endfor %}
+  
+  </div>
+  {% endblock %}
+  
+  <footer>
+    <div class="footer">
+      <!-- Add your footer content here -->
+      <p>&copy; 2023 Gada Electronics. All rights reserved.</p>
+    </div>
+  </footer>
 </body>
-
-
-
-</div>
-
 </html>
-
-

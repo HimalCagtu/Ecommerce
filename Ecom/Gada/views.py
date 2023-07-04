@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UserForm,LoginForm
 from .models import *
 from django.http import HttpResponse
@@ -74,7 +74,7 @@ def homepage(request):
 def cart(request,pk):
     
     if request.user.is_authenticated:
-        item = Product.objects.get(id =pk)
+        item = get_object_or_404(Product, id =pk)
         
 
         order_item, created = Cart.objects.get_or_create(user = request.user , item = item ,)
@@ -111,7 +111,7 @@ def remove(request,pk):
 
         if cart_qs.exists():
                 cart = cart_qs[0]
-                if cart.quantity <=0:
+                if cart.quantity <=1:
                     cart.delete()
 
                 else:
@@ -140,6 +140,7 @@ def remove(request,pk):
 
 def cart_view(request):
     cart = Cart.objects.filter(user =request.user)
+    page = 'cartview'
 
     p =0
     for i in cart:
@@ -147,14 +148,15 @@ def cart_view(request):
       p += i.item.price * i.quantity
 
 
-    
+
     order_cart = Order.objects.filter(user = request.user , ordered =False)
     total = order_cart[0].orderitems.count
     context ={
         'total':total,
         'cart':cart,
         'p':p,
-        'title' : 'cart'
+        'title' : 'cart',
+        'page' : page,
     }
 
 
@@ -184,7 +186,7 @@ def shipping(request):
              }
     
     if request.method == 'POST':
-        order_cart.ordered == True
+        order_cart.ordered == 'True'
         form = ShippingForm(request.POST)
         if form.is_valid():
             
@@ -204,23 +206,24 @@ def shipping(request):
 
 
 def payment(request):
-    key = settings.STRIPE_PUBLISHABLE_KEY
-    order_qs = Order.objects.filter(user = request.user, ordered = False)
-    cart = Cart.objects.filter(user =request.user)
-    p =0
+    # key = settings.STRIPE_PUBLISHABLE_KEY
+    # order_qs = Order.objects.filter(user = request.user, ordered = False)
+    # cart = Cart.objects.filter(user =request.user)
+    # p =0
     
-    for i in cart:
-       p += i.item.price * i.quantity
+    # for i in cart:
+    #    p += i.item.price * i.quantity
 
-    if request.method == 'POST':
-        charge = stripe.Charge.create(amount = p)
-        currency = 'usd',
-        description = order_qs
-        source = request.POST['stripeToken']
+    # if request.method == 'POST':
+    #     charge = stripe.Charge.create(amount = p)
+    #     currency = 'usd',
+    #     description = order_qs
+    #     source = request.POST['stripeToken']
 
 
     
-    return render(request, 'payment.html', {'key':key,'total':p})
+    return render(request, 'payment.html') 
+# {'key':key,'total':p})
 
 def removeitem(request, pk):
 
@@ -233,3 +236,4 @@ def details(request, pk):
     item = Product.objects.get(id = pk)
 
     return render(request,'details.html',{'item':item})
+

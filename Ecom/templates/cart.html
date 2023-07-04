@@ -1,12 +1,64 @@
-<head>{% if messages %}</head>
-	{% for m in messages %}
-		{{m}}
-		{% endfor %}
-		{% endif %}
+{% extends 'home.html' %}
 
+{% block content %}
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
 
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+    }
 
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c;
+    }
+
+    .btn a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .btn:hover {
+        background-color: #449d44;
+        border-color: #398439;
+    }
+</style>
 	{% if page == 'shipping' %}
+    
     <div style="text-align: center; background-color: rgb(168, 185, 180);">
         <h3 style="color: brown;">Address Info</h3>
         <form method="POST">
@@ -16,7 +68,8 @@
 		
 	<input type="submit" value ="Ship">
 
-</form></div>
+</form>
+</div>
 	
 {% endif %}
 	<div class="container my-5">
@@ -26,52 +79,61 @@
     <div class="my-5">
         <h2 style="text-align: center; color: brown; background-color: aliceblue;">Your Cart</h2>
     </div>
+    {% if cart.count >= 1 %}
     <table class="table table-hover">
+        
         <thead>
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Product Name</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Price</th>
-                
                 <th scope="col">Image</th>
-                
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
-            <div style="text-align: center; justify-content: center;">  {% for cart in cart %}
-            <tr>
-                <th scope="row">{{ forloop.counter }}</th>
-                <td>{{ cart.item.name }}</td>
-                <td>{{ cart.quantity }}</td>
-				
-                <td>${% widthratio cart.quantity 1 cart.item.price %} </td>
-				
-                <td><img src="{{cart.item.image.url}}" style="width: 100px; height: 100px;" alt="{{cart.item.name}}"> </td>
-				<td><a href="{% url 'cart' cart.item.id %}" style="text-decoration: none;">+</a></td>
-				
-				
-                <td><a href="{% url 'remove' cart.item.id %}" style="text-decoration: none; font-size: larger; font-family: 'Courier New', Courier, monospace;">-</a></td>
-                <td><a href="{% url 'removeitem' cart.id %}" style="text-decoration: none;">Remove</a></td>
-            </tr>
-            {% endfor %}</div>
-          
+            <div class="text-center">
+                
+                {% for cart in cart %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ cart.item.name }}</td>
+                        <td>{{ cart.quantity }}</td>
+                        <td>Rs.{% widthratio cart.quantity 1 cart.item.price %}</td>
+                        <td><img src="{{cart.item.image.url}}" style="width: 100px; height: 100px;" alt="{{cart.item.name}}"></td>
+                        <td><a href="{% url 'cart' cart.item.id %}" style="text-decoration: none;">+</a></td>
+                        <td><a href="{% url 'remove' cart.item.id %}" style="text-decoration: none; font-size: larger; font-family: 'Courier New', Courier, monospace;">-</a></td>
+                        <td><a href="{% url 'removeitem' cart.id %}" style="text-decoration: none;">Remove</a></td>
+                    </tr>
+                {% endfor %}
+                
+            </div>
+    
             <tr>
                 <th scope="row"></th>
                 <td colspan="2">Total</td>
-                <td colspan="2"></td>
-                <td colspan="2">{{p}}</td>
-                <td></td>
+                <td colspan="2">Rs.{{p}}</td>
+               
             </tr>
             <tr>
-                {% if p > 0 %}
-                <th scope="row"></th>
-                <td colspan="3" class="text-right ">
-                    <button class="btn btn-success mr-4"><a href="{% url 'ship' %}">Proceed To Checkout</a></button>
-                </td>
+                {% if page == 'cartview' %}
+                    {% if p > 0 %}
+                        <th scope="row"></th>
+                        <td colspan="3" class="text-right">
+                            <a href="{% url 'ship' %}" style="color:bl; text-decoration: none;"><button class="btn btn-success mr-4">Checkout</button></a>
+                        </td>
+                    {% endif %}
                 {% endif %}
             </tr>
         </tbody>
     </table>
+    {% else %}
+    
+    <h1>NO ITEMS IN CART</h1>
+    {% endif %}
 	<a href="{% url 'home' %}">Continue Shopping</a>
 </div>
+{% endblock %}
