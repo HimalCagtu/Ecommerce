@@ -134,6 +134,11 @@
     
     <h1>NO ITEMS IN CART</h1>
     {% endif %}
+
+
+        {{item.orderitems.item.name}}
+
+        
 	<a href="{% url 'home' %}">Continue Shopping</a>
 </div>
 {% endblock %}

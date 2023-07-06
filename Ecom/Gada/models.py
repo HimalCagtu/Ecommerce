@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True, null=True)
-    username = models.CharField(max_length=20)
+    username = models.CharField(max_length=20, unique=True)
     avatar = models.ImageField(null=True, default='xyz.jpeg')
     password = models.CharField(max_length=200)
 
@@ -34,11 +34,12 @@ class Product(models.Model):
 class Cart(models.Model):
      user = models.ForeignKey(User, on_delete=models.CASCADE)
      item = models.ForeignKey(Product , on_delete=models.CASCADE)
-     quantity = models.IntegerField(default=0)
+     quantity = models.IntegerField(default=1)
      created = models.DateTimeField(auto_now_add=True)
+     is_active =models.BooleanField(default=True)
 
      def __str__(self) -> str:
-         return f'{self.quantity} of {self.user.name}'
+         return f'{self.quantity}, {self.item} of {self.user.name}'
      
      
 

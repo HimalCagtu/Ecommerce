@@ -7,10 +7,11 @@ from django import forms
 class UserForm(ModelForm):
 
     password = forms.PasswordInput()
+    avatar = forms.ImageField(required=False)
     class Meta:
         model = User
         # fields = '__all__'
-        fields = ['name', 'email', 'username','password']
+        fields = ['name', 'email', 'avatar', 'username','password']
         
 
 class LoginForm(ModelForm):

@@ -1,0 +1,76 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<style>
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 20px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.user-profile .avatar {
+  margin-bottom: 20px;
+}
+
+.user-profile .avatar img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-profile .user-info h2 {
+  margin-bottom: 10px;
+}
+
+.user-profile .user-info p {
+  margin: 5px 0;
+}
+</style>
+
+<div class="user-profile">
+    <div class="avatar">
+        <img src="{{ user.avatar.url }}" alt="User Avatar">
+    </div>
+    <div class="user-info">
+        <h2>{{ user.name }}</h2>
+        <!-- Add more user information here -->
+        <!-- For example: -->
+        <p>Email: {{ user.email }}</p>
+        <a href="{% url 'changepassword' %}">Change Password</a>
+        <!-- Customize and add more information as needed -->
+    </div>
+</div>
+
+
+{% if page == 'changepassword' %}
+<div style="border: 2px solid black; text-align: left; padding: 10px; width: 320px; margin: 0 auto; ">
+    <form method="POST" style="margin-top: 10px; display: flex; flex-direction: column;">
+
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+
+        <p>
+            <label for="id_old_password" style="font-weight: bold; margin-left: 13px;" >Old Password:</label>
+            <input type="password" name="old_password" id="id_username" style="padding: 5px; margin-left: 5px; width: 200px;" />
+        </p>
+        
+        <p>
+            <label for="id_password" style="font-weight: bold; margin-left: 13px; "> New Password:</label>
+            <input type="password" name="new_password1" id="id_password" style="padding: l 5px; margin-left: 8px; width: 200px;" />
+        </p>
+        <p>
+            <label for="id_password" style="font-weight: bold; margin-left: 13px;"> Confirm Password:</label>
+            <input type="password" name="new_password2" id="id_password" style="padding: 5px; margin-left: 8px; width: 200px;" />
+        </p>
+
+        <input type="submit" value="Change" style="padding: 8px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; margin-top: 10px;">
+
+    </form>
+</div>
+
+{% endif %}
+{% endblock content %}

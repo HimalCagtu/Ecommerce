@@ -6,7 +6,12 @@
   <style>
     /* Add your CSS styling here */
     body {
+
+      
       font-family: Arial, sans-serif;
+      background-repeat: no-repeat;
+      background-size: cover;
+
     }
     header {
       background-color: #f5f5f5;
@@ -65,6 +70,7 @@ form {
   </style>
 </head>
 <body>
+  
   <header>
     <a href="{% url 'cartview' %}">My Cart</a>
     <div class="header">
@@ -80,6 +86,8 @@ form {
     </div>
     {% block log %}
     
+    <a href="{% url 'profile' %}"><img src="{{user.avatar.url}}"</a>
+
      <div class="footer" style="text-align:end;">
        {% if request.user.is_authenticated %}
        <a href="{% url 'logout' %}">Logout</a>
@@ -105,6 +113,7 @@ form {
       </a>
       
          {% else %}
+         
          <p>Please <a href="{% url 'login' %}" style="text-decoration: none;">Login</a> to Buy</p>
             {% endif %}
         </div>

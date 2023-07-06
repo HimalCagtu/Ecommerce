@@ -2,14 +2,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UserForm,LoginForm
 from .models import *
 from django.http import HttpResponse
-from django.contrib.auth import login,logout,authenticate
-from django.db.models import Q
+from django.contrib.auth import login,logout,authenticate,update_session_auth_hash
+from django.db.models import Q, F, Sum
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import *
 from django.conf import settings
-import stripe
-
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.forms import PasswordChangeForm
+from django.core.mail import send_mail
 # Create your views here.
 def signup_form(request):
     if request.user.is_authenticated:
@@ -19,12 +20,13 @@ def signup_form(request):
     context = {'form': form}
 
     if request.method == 'POST':
-        form = UserForm(request.POST)
+        form = UserForm(request.POST, request.FILES)
         if form.is_valid:
             obj =  form.save(commit=False)
-            obj.avatar = request.FILES.get('image')
+            
+            obj.password = make_password(request.POST.get('password'))
             obj.save()
-            return redirect('signup')
+            return redirect('home')
         
 
     return render(request, 'form.html',{'form':form,'page':page,'title':'signup'})
@@ -43,9 +45,9 @@ def loginpage(request):
         except:
             return HttpResponse('User does not exist')
 
-        user = authenticate(email = email, password = password)
+        user = authenticate(request,email = email, password = password)
 
-        if user:
+        if user is not None:
             login(request, user)
             return redirect('home')
 
@@ -77,15 +79,15 @@ def cart(request,pk):
         item = get_object_or_404(Product, id =pk)
         
 
-        order_item, created = Cart.objects.get_or_create(user = request.user , item = item ,)
+        order_item, created = Cart.objects.get_or_create(user = request.user , item = item , is_active=True)
          
         order_qs =Order.objects.filter(user = request.user , ordered = False)
 
         if order_qs.exists():
             order = order_qs[0] 
 
-            if order.orderitems.filter(item = item).exists:
-                order_item.quantity +=1
+            if order.orderitems.filter(item = item).exists():
+                order_item.quantity += 1
                 order_item.save()
                 messages.info(request,'added successfully,.,,' )
                 return redirect('cartview')
@@ -137,26 +139,26 @@ def remove(request,pk):
     else:
         return redirect('cartview')
 
-
+@login_required(login_url='login')
 def cart_view(request):
-    cart = Cart.objects.filter(user =request.user)
+    cart = Cart.objects.filter(user =request.user, is_active=True).annotate(p = F('quantity') * F('item__price'))
     page = 'cartview'
 
-    p =0
-    for i in cart:
-       
-      p += i.item.price * i.quantity
+   
 
 
 
-    order_cart = Order.objects.filter(user = request.user , ordered =False)
-    total = order_cart[0].orderitems.count
+    order_cart = Order.objects.filter(user = request.user , ordered =False) 
+    ordered = Order.objects.filter(user=request.user, ordered=True)
+   
+    # total = order_cart[0].orderitems.count
     context ={
-        'total':total,
+        
         'cart':cart,
-        'p':p,
+        'p':cart.aggregate(Sum('p'))['p__sum'],
         'title' : 'cart',
         'page' : page,
+        'ordered':ordered,
     }
 
 
@@ -168,11 +170,8 @@ def shipping(request):
 
     page = 'shipping'
     form = ShippingForm()
-    cart = Cart.objects.filter(user =request.user)
-    p =0
+    cart = Cart.objects.filter(user =request.user, is_active=True).annotate(p = F('quantity') * F('item__price'))
     
-    for i in cart:
-       p += i.item.price * i.quantity
 
     order_cart = Order.objects.get(user = request.user , ordered =False)
     
@@ -181,19 +180,29 @@ def shipping(request):
               'form':form,
               'total':total,
               'cart':cart,
-              'p':p,
+              'p':cart.aggregate(Sum('p'))['p__sum'],
               'title': 'shipping'
              }
     
     if request.method == 'POST':
-        order_cart.ordered == 'True'
+        update = Order.objects.filter(user=request.user, ordered=False).update(ordered=True)
+        
         form = ShippingForm(request.POST)
         if form.is_valid():
+            cart.update(is_active=False)
             
             obj =form.save(commit=False)
             obj.user = request.user
             obj.order = order_cart
             obj.save()
+            
+            send_mail(
+                "Purchase",
+                "Thanks for purchasing products",
+                "",
+                [request.user.email],
+                fail_silently=False,
+            )
             
 
             
@@ -237,3 +246,30 @@ def details(request, pk):
 
     return render(request,'details.html',{'item':item})
 
+
+def profile(request):
+
+    user = User.objects.get(id =request.user.id)
+
+    return render(request, 'profile.html', {'user':user})
+
+
+
+def changepassword(request):
+    page = 'changepassword'
+    form = PasswordChangeForm(request.user)
+    context = {'form':form,
+               'page':page}
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+           user = form.save()
+           update_session_auth_hash(request, user)
+           return redirect('logout')
+        
+    return render(request,'profile.html',context)
+
+def passwordresetcomplete(request):
+
+    return redirect('login')

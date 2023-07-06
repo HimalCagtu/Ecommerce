@@ -1,0 +1,78 @@
+{% extends 'home.html' %}
+
+{%block content%}
+
+<style>
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .card {
+        border: 2px solid black;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        width: 300px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .form-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        text-decoration: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    .btn-outline {
+        background-color: #007bff;
+        border: 1px solid #007bff;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+
+    small {
+        color: red;
+    }
+</style>
+
+
+<div class="center">
+	<form method="post" class="card">
+		{% csrf_token %}
+	    <h2 class="text-center">Reset Password</h2>
+		{% for field in form %}
+	    		{{ field.label_tag }} 
+	        	{{ field }}
+	        	{% if field.errors %}
+	        		<small>{{ field.errors|striptags  }}</small> 
+	        	{% endif %}
+		{% endfor %}
+		<div class="form-buttons">
+			<input type="submit" value="Send" class="btn btn-primary">
+			<a href="{{request.META.HTTP_REFERER}}"  class="btn btn-outline">Cancel</a>
+		</div>
+	</form>
+	</div>
+{%endblock content%}
