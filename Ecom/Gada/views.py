@@ -78,8 +78,8 @@ def cart(request,pk):
     if request.user.is_authenticated:
         item = get_object_or_404(Product, id =pk)
         
-
-        order_item, created = Cart.objects.get_or_create(user = request.user , item = item , is_active=True)
+        if item.quantity >= 1:
+            order_item, created = Cart.objects.get_or_create(user = request.user , item = item , is_active=True)
          
         order_qs =Order.objects.filter(user = request.user , ordered = False)
 
@@ -87,20 +87,41 @@ def cart(request,pk):
             order = order_qs[0] 
 
             if order.orderitems.filter(item = item).exists():
-                order_item.quantity += 1
-                order_item.save()
-                messages.info(request,'added successfully,.,,' )
-                return redirect('cartview')
-            
+                if item.quantity >=1:
+                    order_item.quantity += 1
+                    item.quantity -=1
+                    item.save()
+                    order_item.save()
+                    messages.info(request,'added successfully,.,,' )
+                    return redirect('cartview')
+                else:
+                    messages.info(request, "Out of stock")
+                    return redirect('home')
+           
             else:
-                order.orderitems.add(order_item)
-                messages.info(request,'added successfullyfad')
-                return redirect('cartview')
+                if item.quantity >= 1:
+                    order.orderitems.add(order_item)
+                    item.quantity -=1
+                    item.save()
+                    messages.info(request,'added successfullyfad')
+                    return redirect('cartview')
+                else:
+                    messages.info(request, "Out of stock")
+                    return redirect('home')
+           
+
         else:
-            order = Order.objects.create(user = request.user)
-            order.orderitems.add(order_item)
-            messages.info(request,'added successfullydada')
-            return redirect('cartview')
+            if item.quantity >=1:
+                order = Order.objects.create(user = request.user)
+                item.quantity -=1
+                item.save()
+                order.orderitems.add(order_item)
+                messages.info(request,'added successfullydada')
+                return redirect('cartview')
+            else:
+                messages.info(request, "Out of stock")
+                return redirect('home')
+           
 
         
 
@@ -114,10 +135,14 @@ def remove(request,pk):
         if cart_qs.exists():
                 cart = cart_qs[0]
                 if cart.quantity <=1:
+                    item.quantity +=1
+                    item.save()
                     cart.delete()
 
                 else:
                     cart.quantity -=1
+                    item.quantity +=1
+                    item.save()
                     cart.save()
 
         
@@ -199,7 +224,7 @@ def shipping(request):
             send_mail(
                 "Purchase",
                 "Thanks for purchasing products",
-                "",
+                "himlu.dada@gmail.com",
                 [request.user.email],
                 fail_silently=False,
             )
@@ -207,7 +232,7 @@ def shipping(request):
 
             
             
-            return HttpResponse('You will receive soon')
+            return redirect('home')
 
     
 
@@ -235,8 +260,11 @@ def payment(request):
 # {'key':key,'total':p})
 
 def removeitem(request, pk):
-
+    # product = Product.objects.get(id = pk)
     item = Cart.objects.get(id =pk)
+    
+    # product.quantity += item.quantity
+    # product.save()
     item.delete()
     return redirect('cartview')
 
@@ -273,3 +301,22 @@ def changepassword(request):
 def passwordresetcomplete(request):
 
     return redirect('login')
+
+
+
+def updateprofile(request):
+    page = 'update'
+    form = UserUpdate(instance=request.user)
+    context = {'page':page,
+               'form':form,
+            }
+    
+    if request.method == 'POST':
+
+        form = UserUpdate(request.POST, request.FILES , instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+
+
+    return render(request,'profile.html',context)

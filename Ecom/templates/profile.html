@@ -30,6 +30,16 @@
 .user-profile .user-info p {
   margin: 5px 0;
 }
+
+.update {
+
+border: 2px solid black;
+
+
+
+}
+
+
 </style>
 
 <div class="user-profile">
@@ -42,6 +52,7 @@
         <!-- For example: -->
         <p>Email: {{ user.email }}</p>
         <a href="{% url 'changepassword' %}">Change Password</a>
+        <a href="{% url 'update' %}">Edit Profile</a>
         <!-- Customize and add more information as needed -->
     </div>
 </div>
@@ -71,6 +82,39 @@
 
     </form>
 </div>
+
+<a href="mailto:himlu.dada@gmail.com" style="color:dodgerblue;">Send Email</a>
+
+
+
+{% endif %}
+
+{% if page == 'update' %}
+<div class="update">
+  <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; border: 1px solid black; padding: 10px;">
+    <input type="hidden" name="csrfmiddlewaretoken" value="P51fxaBCev7W5BvGPGVW5ZJJ3O7W2L0xj7V5Pjp8srANhN04edUL87Ef3w2WKMgz">
+    <p>
+      <label for="id_name">Name:</label>
+      <input type="text" name="name" value="Sooraj" maxlength="200" required id="id_name">
+    </p>
+
+    <p>
+      <label for="id_email">Email:</label>
+      <input type="email" name="email" value="soorajrajbanshi@cagtu.com" maxlength="254" required id="id_email">
+    </p>
+
+    <p>
+      <label for="id_avatar">Avatar:</label>
+      Currently: <a href="/images/Group_1.png">Group_1.png</a><br>
+      Change:
+      <input type="file" name="avatar" accept="image/*" id="id_avatar">
+    </p>
+
+    <input type="submit" value="Done">
+  </form>
+</div>
+
+
 
 {% endif %}
 {% endblock content %}

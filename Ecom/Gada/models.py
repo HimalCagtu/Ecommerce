@@ -26,6 +26,7 @@ class Product(models.Model):
     description = models.TextField()
     digital = models.BooleanField(default=False)
     image = models.ImageField(null = True)
+    quantity = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name

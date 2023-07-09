@@ -27,3 +27,11 @@ class ShippingForm(ModelForm):
         model = Shipping
         fields ='__all__'
         exclude = ['user','order']
+
+
+class UserUpdate(ModelForm):
+ 
+    class Meta:
+        model = User
+        fields = ['name', 'email', 'avatar']
+     

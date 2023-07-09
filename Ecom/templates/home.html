@@ -77,8 +77,12 @@ form {
        
       <!-- Add your header content here -->
       <a href="{% url 'home' %}" style="text-decoration: none;"><h1 >Gada Electronics <img src="/images/gada.png" width="50px; style"></h1></a>
-      
-      <form method="GET" action="{% url 'home' %}">
+      {% if messages %}
+        {% for m in messages %}
+            {{m}}
+        {% endfor %}
+      {% endif %}
+            <form method="GET" action="{% url 'home' %}">
             
         <input type="search" name="q" style="color: rebeccapurple; border-color: greenyellow; border-radius: 4px;">
         <input type="submit" value ="search">
@@ -111,7 +115,9 @@ form {
           Add to Cart
         </button>
       </a>
-      
+      <button style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+        {{product.quantity}}
+      </button> in stock
          {% else %}
          
          <p>Please <a href="{% url 'login' %}" style="text-decoration: none;">Login</a> to Buy</p>
@@ -127,6 +133,12 @@ form {
       <!-- Add your footer content here -->
       <p>&copy; 2023 Gada Electronics. All rights reserved.</p>
     </div>
+    <p>Address:</p>
+    <address>
+      Shop no. 13,<br> Ashok Nagar,
+           Andheri East,<br> Mumbai, Maharashtra, India
+      </address> 
+           <br>
   </footer>
 </body>
 </html>
